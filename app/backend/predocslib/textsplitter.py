@@ -15,7 +15,6 @@ class TextSpiltter(ABC):
     :param pages: The pages to split
     :return: A generator of SplitPage
     """
-
     def split_pages(self,pages : list[Page]) -> Generator[SplitPage,None,None]:
         if False:
             yield

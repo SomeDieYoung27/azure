@@ -137,3 +137,39 @@ class OpenAIEmbeddings(ABC):
 
 
         return embeddings
+    
+
+
+    async def create_embedding_single(self,text : str,dimensions_args: ExtraArgs) -> list[float]:
+         client = await self.create_client()
+         async for attempt in AsyncRetrying(
+            retry=retry_if_exception_type(RateLimitError),
+            wait=wait_random_exponential(min=15, max=60),
+            stop=stop_after_attempt(15),
+            before_sleep=self.before_retry_sleep,
+         ):
+             with attempt:
+                 emb_response = await client.embeddings.create(
+                     model=self.open_ai_model_name, input=text, **dimensions_args
+                 )
+                 logger.info("Computed embedding for text section. Character count: %d", len(text))
+
+
+         return emb_response.data[0].embedding
+    
+
+    async def create_embeddings(self,texts : list[str]) -> list[list[float]]:
+
+        dimensions_args : ExtraArgs  = (
+            {"dimensions": self.open_ai_dimensions}
+            if OpenAIEmbeddings.SUPPORTED_DIMENSIONS_MODEL.get(self.open_ai_model_name)
+            else {}
+        )
+        if not self.disable_batch and self.open_ai_model_name in OpenAIEmbeddings.SUPPORTED_BATCH_AOAI_MODEL:
+            return await self.create_embedding_batch(texts,dimensions_args)
+        
+
+        return [await self.create_embedding_single(text,dimensions_args) for text in texts]
+    
+        
+        

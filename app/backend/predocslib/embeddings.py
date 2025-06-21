@@ -171,5 +171,13 @@ class OpenAIEmbeddings(ABC):
 
         return [await self.create_embedding_single(text,dimensions_args) for text in texts]
     
-        
+
+
+class AzureOpenAIEmbeddings(OpenAIEmbeddings): 
+    """
+    Class for using Azure OpenAI embeddings
+    To learn more please visit https://learn.microsoft.com/azure/ai-services/openai/concepts/understand-embeddings
+    """
+
+    def __init__(self,open_ai_service : Union[str, None],open_ai_deployment : Union[str,None], open_ai_model_name: str, open_ai_dimensions: int,open_ai_api_version: str,credential: Union[AsyncTokenCredential, AzureKeyCredential],open_ai_custom_url: Union[str, None] = None,open_ai_custom_url: Union[str, None] = None):
         

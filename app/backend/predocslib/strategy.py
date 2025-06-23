@@ -53,4 +53,14 @@ class DocumentAction(Enum):
     Remove = 1
     RemoveAll = 2
 
+class Strategy(ABC):
+    """
+    Abstract strategy for ingesting documents into a search service. It has a single setup step to perform any required initialization, and then a run step that actually ingests documents into the search service.
+    """
+
+    async def setup(self):
+         raise NotImplementedError
+    
+    async def run(self):
+         raise NotImplementedError
 
